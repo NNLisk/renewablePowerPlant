@@ -49,3 +49,4 @@ build/
 ## own ##
 
 tests/
+*.class
