@@ -3,6 +3,7 @@ package menus
 // menu inspo from https://stackoverflow.com/questions/44461625/commandline-menu-loop-scala
 
 import scala.annotation.tailrec
+import data.ApiCall
 
 
 object Menus {
@@ -18,10 +19,10 @@ object Menus {
         > 3. Exit                                                 |
         |                                                         |
         '---------------------------------------------------------'
-        """.stripMargin)
+        """)
 
         scala.io.StdIn.readLine("Select: ").trim match {
-            case "1" => /* CALL METRICS SUB MENU */ ; showMainMenu()
+            case "1" => showEnergyMetricsMenu1() ; showMainMenu()
             case "2" => /* CALL CONTROL PANEL SUB MENUY */ ; showMainMenu()
             case "3" => println("Shutting down")
             case _ => showMainMenu()
@@ -49,11 +50,17 @@ object Menus {
     def showEnergyMetricsMenu1(): Unit = {
 
         println("""
-            menu here
+        .-------------------- ENERGY METRICS ---------------------.
+        |                                                         |
+        > 1. Display real time wind data                          |
+        > 2. Display the control menu                             |
+        > 3. Exit                                                 |
+        |                                                         |
+        '---------------------------------------------------------'
         """)
 
         scala.io.StdIn.readLine("Select: ").trim match {
-            case "1" => 
+            case "1" => ApiCall.showWindRealTime()
             case "2" => 
             case "3" => 
             case _ => showEnergyMetricsMenu1()

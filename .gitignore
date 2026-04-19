@@ -50,3 +50,4 @@ build/
 
 tests/
 *.class
+Config.scala
