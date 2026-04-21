@@ -50,7 +50,7 @@ object ApiCall {
     def fetchWind15Min = fetchFromFinGrid("75/data")("format=csv")
 
     def fetchWindWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
-        fetchFromFinGrid(s"181/data")(s"format=csv&startTime=${startTime.format(apiFmt)}&endTime=${endTime.format(apiFmt)}")
+        fetchFromFinGrid(s"181/data")(s"format=csv&startTime=${startTime.format(apiFmt)}&endTime=${endTime.format(apiFmt)}&pageSize=20000")
     }
 
     def fetchHydroWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
