@@ -46,8 +46,16 @@ object ApiCall {
 
     val fetchWind15Min = fetchFromFinGrid("75/data")("format=csv")
 
-    def fetchWithOptions(dataset: String, startTime: String, endTime: String): HttpResponse[String] = {
-        fetchFromFinGrid(s"${dataset}/data")(s"format=csv&startTime=${startTime}&endTime=${endTime}")
+    def fetchWindWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
+        fetchFromFinGrid(s"181/data")(s"format=csv&startTime=${startTime}&endTime=${endTime}")
+    }
+
+    def fetchHydroWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
+        fetchFromFinGrid(s"191/data")(s"format=csv&startTime=${startTime}&endTime=${endTime}")
+    }
+
+    def fetchNuclearWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
+        fetchFromFinGrid(s"188/data")(s"format=csv&startTime=${startTime}&endTime=${endTime}")
     }
 
     def showWindRealTime(): Unit = {
@@ -72,6 +80,7 @@ object ApiCall {
     def pullFromCsv() = {
         
     }*/
+
     def parseUserDate(raw: String): Either[String, LocalDateTime] = {
         val trimmed = raw.trim
         trimmed match {
@@ -89,6 +98,7 @@ object ApiCall {
                 }
         }
     }
+
     def askUserForPeriod(): Either[String, (LocalDateTime, LocalDateTime)] = {
         val startRaw = scala.io.StdIn.readLine("  Enter start date (DD/MM/YYYY HH:mm): ")
         val endRaw   = scala.io.StdIn.readLine("  Enter end date   (DD/MM/YYYY HH:mm): ")
