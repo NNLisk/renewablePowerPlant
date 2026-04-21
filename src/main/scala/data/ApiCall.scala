@@ -12,7 +12,7 @@ import java.io.{BufferedReader, BufferedWriter, FileReader, FileWriter}
 import java.time.LocalDateTime
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 import scala.collection.mutable.ListBuffer
-import scala.sys.process.processInternal.File
+import java.io.File
 // API call object:
 // - currying fetch functions for fingrid api calls, different datasets
 // csv and dataobject functions
@@ -76,9 +76,6 @@ object ApiCall {
         println(data.body())
     }
 
-    def pullFromCsv() = {
-
-    }
 
     def parseUserDate(raw: String): Either[String, LocalDateTime] = {
         val trimmed = raw.trim
