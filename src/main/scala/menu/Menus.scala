@@ -3,7 +3,7 @@ package menus
 // menu inspo from https://stackoverflow.com/questions/44461625/commandline-menu-loop-scala
 
 import scala.annotation.tailrec
-import data.{ApiCall, dataProcessing}
+import data.{ApiCall, dataProcessing, powerOutputObservation}
 
 
 object Menus {
@@ -39,9 +39,9 @@ object Menus {
         """)
 
         scala.io.StdIn.readLine("Select: ").trim match {
-            case "1" => 
-            case "2" => 
-            case "3" => 
+            case "1" =>
+            case "2" =>
+            case "3" =>
             case _ => showControlPanelMenu1()
         }
     }
@@ -62,30 +62,28 @@ object Menus {
 
         scala.io.StdIn.readLine("Select: ").trim match {
             case "1" => {
-                dataProcessing.askUserForPeriod() match {
-                    case Left(x) => println(x)
-                    case Right(x) => println(ApiCall.fetchWindWithOptions(x._1, x._2).body)
-                }
+              val observations=dataProcessing.pullFromCsv("data/wind.csv")
+              showFilterMenu(observations)
+              showEnergyMetricsMenu1() // come back after filter menu exits
+
             }
             case "2" =>  {
-              dataProcessing.askUserForPeriod() match {
-                    case Left(x) => println(x)
-                    case Right(x) => println(ApiCall.fetchHydroWithOptions(x._1, x._2).body)
-                }
+              val observations=dataProcessing.pullFromCsv("data/hydro.csv")
+              showFilterMenu(observations)
+              showEnergyMetricsMenu1()
             }
             case "3" => {
-              dataProcessing.askUserForPeriod() match {
-                    case Left(x) => println(x)
-                    case Right(x) => println(ApiCall.fetchHydroWithOptions(x._1, x._2).body)
-                }
+              val observations=dataProcessing.pullFromCsv("data/nuclear.csv")
+              showFilterMenu(observations)
+              showEnergyMetricsMenu1()
             }
             case "0" => showMainMenu()
             case _ => showEnergyMetricsMenu1()
         }
     }
-
-    //@tailrec
-    def showFilterMenu() = {
+  // obs - the list that comes from pullFromCsv
+    @tailrec
+    def showFilterMenu(obs: List[powerOutputObservation]): Unit= {
         println("""
         .-------------------- ENERGY METRICS ---------------------.
         |                                                         |
@@ -100,7 +98,45 @@ object Menus {
         |                                                         |
         '---------------------------------------------------------'
         """)
+        scala.io.StdIn.readLine("Select: ").trim match {
+          case "1" =>
+            dataProcessing.printObservations(dataProcessing.filterLast24h(obs))
+            showFilterMenu(obs)
+          case "2" =>
+            dataProcessing.printObservations(dataProcessing.filterLastMonth(obs))
+            showFilterMenu(obs)
+          case "3" =>
+            dataProcessing.printObservations(dataProcessing.filterLastMonth(obs))
+            showFilterMenu(obs)
+          case "4" =>
+            dataProcessing.printObservations(dataProcessing.filterLast6Months(obs))
+            showFilterMenu(obs)
+  // in cases 5-7 Either handles bad user input
+          case "5" =>
+            dataProcessing.askUserForDate() match {
+              case Left(err)   => println(s"\n  Error: $err")
+              case Right(date) => dataProcessing.printObservations(dataProcessing.filterByDay(date)(obs))
+        }
+    showFilterMenu(obs)
+
+    case "6" =>
+    dataProcessing.askUserForDate() match {
+      case Left(err)   => println(s"\n  Error: $err")
+      case Right(date) => dataProcessing.printObservations(dataProcessing.filterByWeek(date)(obs))
     }
+    showFilterMenu(obs)
+
+    case "7" =>
+    dataProcessing.askUserForDate() match {
+      case Left(err)   => println(s"\n  Error: $err")
+      case Right(date) => dataProcessing.printObservations(dataProcessing.filterByMonth(date)(obs))
+    }
+    showFilterMenu(obs)
+
+    case "0" => ()             // exits back to showEnergyMetricsMenu1
+    case _ => showFilterMenu(obs)
+    }
+  }
 
 
 }
