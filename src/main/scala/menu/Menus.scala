@@ -64,7 +64,7 @@ object Menus {
             case "1" => {
                 ApiCall.askUserForPeriod() match {
                     case Left(x) => println(x)
-                    case Right(x) => ApiCall.fetchWindWithOptions(x._1, x._2)
+                    case Right(x) => println(ApiCall.fetchWindWithOptions(x._1, x._2).body)
                 }
             }
             case "2" => ApiCall.showHydroRealTime()

@@ -41,16 +41,16 @@ object ApiCall {
 
     // curried functions to fetch a specific dataset data from fingrid
 
-    val fetchFromFinGrid = fetch(fingridurl)
+    def fetchFromFinGrid = fetch(fingridurl)
 
-    val fetchWindRealTime = fetchFromFinGrid("181/data")("format=csv")
-    val fetchHydroRealTime = fetchFromFinGrid("191/data")("format=csv")
-    val fetchNuclearRealTime = fetchFromFinGrid("188/data")("format=csv")
+    def fetchWindRealTime = fetchFromFinGrid("181/data")("format=csv")
+    def fetchHydroRealTime = fetchFromFinGrid("191/data")("format=csv")
+    def fetchNuclearRealTime = fetchFromFinGrid("188/data")("format=csv")
 
-    val fetchWind15Min = fetchFromFinGrid("75/data")("format=csv")
+    def fetchWind15Min = fetchFromFinGrid("75/data")("format=csv")
 
     def fetchWindWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
-        fetchFromFinGrid(s"181/data")(s"format=csv&startTime=${startTime}&endTime=${endTime}")
+        fetchFromFinGrid(s"181/data")(s"format=csv&startTime=${startTime.format(apiFmt)}&endTime=${endTime.format(apiFmt)}")
     }
 
     def fetchHydroWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
@@ -59,6 +59,10 @@ object ApiCall {
 
     def fetchNuclearWithOptions(startTime: LocalDateTime, endTime: LocalDateTime): HttpResponse[String] = {
         fetchFromFinGrid(s"188/data")(s"format=csv&startTime=${startTime}&endTime=${endTime}")
+    }
+
+    def fetchPreviousFiveMonths() = {
+        
     }
 
     def showWindRealTime(): Unit = {
