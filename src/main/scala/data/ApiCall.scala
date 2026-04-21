@@ -6,7 +6,7 @@ import config.Config
 
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
 import java.net.URI
-import data.powerOutputObservation
+import config.Config
 
 import java.time.LocalDateTime
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
@@ -35,6 +35,8 @@ object ApiCall {
 
         client.send(request, HttpResponse.BodyHandlers.ofString())
     }
+
+    // curried functions to fetch a specific dataset data from fingrid
 
     val fetchFromFinGrid = fetch(fingridurl)
 
