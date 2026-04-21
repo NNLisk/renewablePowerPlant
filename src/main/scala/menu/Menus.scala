@@ -12,7 +12,7 @@ object Menus {
     def showMainMenu(): Unit = {
 
         println("""
-        .------ Welcome to a renewabkle energy plant system ------.
+        .------ Welcome to a renewable energy plant system ------.
         |                                                         |
         > 1. Display energy output and statistics                 |
         > 2. Display the control menu                             |
@@ -72,6 +72,10 @@ object Menus {
             case "0" => showMainMenu()
             case _ => showEnergyMetricsMenu1()
         }
+    }
+
+    def showFilteredDataMenu(): Unit = {
+
     }
 
     
