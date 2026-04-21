@@ -2,8 +2,8 @@ package data
 
 case class powerOutputObservation(
     dataset: Int,
-    startTime: String,
-    endTime: String,
-    outputKw: Int
+    startTime: java.time.LocalDateTime,
+    endTime: java.time.LocalDateTime,
+    outputKw: Double
     )
 
