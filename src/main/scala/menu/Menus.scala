@@ -52,20 +52,27 @@ object Menus {
         println("""
         .-------------------- ENERGY METRICS ---------------------.
         |                                                         |
-        > 1. Display real time wind power data                          |
-        > 2. Display real time hydro power data                         |
-        > 3. Display real time nuclear power data                   |
-        > 0. Go back                                                 |
+        > 1. Display real time wind power data                    |
+        > 2. Display real time hydro power data                   |
+        > 3. Display real time nuclear power data                 |
+        > 0. Go back                                              |
         |                                                         |
         '---------------------------------------------------------'
         """)
 
         scala.io.StdIn.readLine("Select: ").trim match {
-            case "1" => ApiCall.showWindRealTime()
+            case "1" => {
+                ApiCall.askUserForPeriod() match {
+                    case Left(x) => println(x)
+                    case Right(x) => ApiCall.fetchWindWithOptions(x._1, x._2)
+                }
+            }
             case "2" => ApiCall.showHydroRealTime()
             case "3" => ApiCall.showNuclearRealTime()
             case "0" => showMainMenu()
             case _ => showEnergyMetricsMenu1()
         }
     }
+
+    
 }

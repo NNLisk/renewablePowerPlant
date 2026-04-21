@@ -5,7 +5,7 @@
 // Emilija Kurtinaityte   || 
 // Adelina Stan           || 
 
-// AI statement: 
+// AI statement: No AI tools 
 
 
 // If build tools won't work, compiles with:
