@@ -95,22 +95,9 @@ object ApiCall {
         }
     }
 
-    def askUserForPeriod(): Either[String, (LocalDateTime, LocalDateTime)] = {
-        val startRaw = scala.io.StdIn.readLine("  Enter start date (DD/MM/YYYY HH:mm): ")
-        val endRaw   = scala.io.StdIn.readLine("  Enter end date   (DD/MM/YYYY HH:mm): ")
-        // with pattern match check Either results
-        (parseUserDate(startRaw), parseUserDate(endRaw)) match {
-            case (Left(err), _) => Left(s"Start date error: $err")
-            case (_, Left(err)) => Left(s"End date error: $err")
-            case (Right(start), Right(end)) =>
-                if (!start.isBefore(end))
-                    Left("Start date must be before end date.")
-                else
-                    Right((start, end))
-        }
-    }
+
     //imperative file handling functions. First one parses csv
-    def parseCsv (csv: String): List[powerOutputObservation] = {
+    /*def parseCsv (csv: String): List[powerOutputObservation] = {
         val lines=csv.split("\n")
         val result=ListBuffer[powerOutputObservation]()
         for (line <- lines.tail) { // .tail skips the header row
@@ -130,9 +117,9 @@ object ApiCall {
         }
 
         result.toList
-    }
+    }*/
     //writes fetched API data into csv
-    def writeIntoCsv(observations: List[powerOutputObservation], filePath: String): Unit = {
+    def writeIntoCsv(csv: String, filePath: String): Unit = {
         val file=new File(filePath)
         val exists=file.exists()
         // make sure the folder exists
@@ -140,59 +127,28 @@ object ApiCall {
             case null=>()
             case parent => parent.mkdirs()
         }
-        val writer = new BufferedWriter(new FileWriter(file, true)) // append mode
+        val lines=csv.split("\n")
+        val writer=new BufferedWriter(new FileWriter(file, true)) // append mode
         try {
             if (!exists) {
-                writer.write("datasetId,startTime,endTime,value")
+                writer.write("datasetId;startTime;endTime;value")
                 writer.newLine()
             }
-            for (obs <- observations) {
-                writer.write(s"${obs.dataset};${obs.startTime};${obs.endTime};${obs.outputKw}")
-                writer.newLine()
+            for (line <- lines.tail) {           // skip API header row
+                if (line.trim.nonEmpty) {
+                    val cols = line.trim.split(";")
+                    if (cols.length >= 4) {
+                        // rewrite with semicolons to match pullFromCsv
+                        writer.write(s"${cols(0)};${cols(1)};${cols(2)};${cols(3)}")
+                        writer.newLine()
+                    }
+                }
             }
-            println(s"  Saved ${observations.size} rows to $filePath")
-        } catch {
+            println(s"  Saved to $filePath")        } catch {
             case e: Exception => println(s"  Error writing CSV: ${e.getMessage}")
         } finally {
             writer.close()
         }
-    }
-    //fetches data from csv
-    def pullFromCsv(filePath: String): List[powerOutputObservation] = {
-        val file = new File(filePath)
-        if (!file.exists()) {
-            println(s"  File not found: $filePath")
-            return List.empty
-        }
-        val result=ListBuffer[powerOutputObservation]()
-        val reader=new BufferedReader(new FileReader(file))
-        val fmt=DateTimeFormatter.ISO_LOCAL_DATE_TIME
-
-        try {
-            reader.readLine() // skip header
-            var line = reader.readLine()
-            while (line != null) {
-                if (line.trim.nonEmpty) {
-                    val cols=line.trim.split(";")
-                    try {
-                        result+=powerOutputObservation(
-                            dataset= cols(0).toInt,
-                            startTime= LocalDateTime.parse(cols(1), fmt),
-                            endTime= LocalDateTime.parse(cols(2), fmt),
-                            outputKw= cols(3).toDouble
-                        )
-                    } catch {
-                        case e: Exception => println(s"  Skipping bad row: $line — ${e.getMessage}")
-                    }
-                }
-                line = reader.readLine()
-            }
-        } catch {
-            case e: Exception => println(s"  Error reading CSV: ${e.getMessage}")
-        } finally {
-            reader.close()
-        }
-        result.toList
     }
 
 }
