@@ -29,12 +29,12 @@ object ApiCall {
         client.send(request, HttpResponse.BodyHandlers.ofString())
     }
 
-    val fetchFromFinGrid = fetch(fingridurl)
+    // curried functions to fetch a specific dataset data from fingrid
 
+    val fetchFromFinGrid = fetch(fingridurl)
     val fetchWindRealTime = fetchFromFinGrid("181/data")("format=csv")
     val fetchHydroRealTime = fetchFromFinGrid("191/data")("format=csv")
     val fetchNuclearRealTime = fetchFromFinGrid("188/data")("format=csv")
-
     val fetchWind15Min = fetchFromFinGrid("75/data")("format=csv")
 
     def showWindRealTime(): Unit = {
@@ -51,7 +51,7 @@ object ApiCall {
         val data: HttpResponse[String] = fetchHydroRealTime
         println(data.body())
     }
-    
+
     def writeIntoCsv() = {
         
     }
