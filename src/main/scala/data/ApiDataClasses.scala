@@ -1,4 +1,4 @@
-
+package data
 
 case class powerOutputObservation(
     dataset: Int,

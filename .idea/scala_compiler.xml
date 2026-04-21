@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <option name="separateProdTestSources" value="true" />
+    <profile name="sbt 1" modules="renewablePowerPlant,renewablePowerPlant.main,renewablePowerPlant.test,renewablepowerplant_9017,renewablepowerplant_9017.main,renewablepowerplant_9017.test" />
+  </component>
+</project>
