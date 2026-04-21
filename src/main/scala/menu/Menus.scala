@@ -67,8 +67,18 @@ object Menus {
                     case Right(x) => println(ApiCall.fetchWindWithOptions(x._1, x._2).body)
                 }
             }
-            case "2" => ApiCall.showHydroRealTime()
-            case "3" => ApiCall.showNuclearRealTime()
+            case "2" =>  {
+                ApiCall.askUserForPeriod() match {
+                    case Left(x) => println(x)
+                    case Right(x) => println(ApiCall.fetchHydroWithOptions(x._1, x._2).body)
+                }
+            }
+            case "3" => {
+                ApiCall.askUserForPeriod() match {
+                    case Left(x) => println(x)
+                    case Right(x) => println(ApiCall.fetchHydroWithOptions(x._1, x._2).body)
+                }
+            }
             case "0" => showMainMenu()
             case _ => showEnergyMetricsMenu1()
         }

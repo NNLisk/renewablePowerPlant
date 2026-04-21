@@ -62,7 +62,7 @@ object ApiCall {
     }
 
     def fetchPreviousFiveMonths() = {
-        
+    
     }
 
     def showWindRealTime(): Unit = {
