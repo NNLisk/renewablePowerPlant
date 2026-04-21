@@ -84,5 +84,23 @@ object Menus {
         }
     }
 
+    //@tailrec
+    def showFilterMenu() = {
+        println("""
+        .-------------------- ENERGY METRICS ---------------------.
+        |                                                         |
+        > 1. By Hour (last 24h)                                   |
+        > 2. By Day (last month)                                  |
+        > 3. By week (last month)                                 |
+        > 4. By Month (last 6 months)                             |
+        > 5. Get a specific day                                   |
+        > 6. Get a specific week                                  |
+        > 7. Get a specific month                                 |
+        > 0. Go back                                              |
+        |                                                         |
+        '---------------------------------------------------------'
+        """)
+    }
+
     
 }
