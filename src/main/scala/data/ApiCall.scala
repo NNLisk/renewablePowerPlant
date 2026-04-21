@@ -37,6 +37,10 @@ object ApiCall {
     val fetchNuclearRealTime = fetchFromFinGrid("188/data")("format=csv")
     val fetchWind15Min = fetchFromFinGrid("75/data")("format=csv")
 
+    def fetchWithOptions(dataset: String, startTime: String, endTime: String): Response[String] = {
+        fetchFromFinGrid(s"${dataset}/data")(s"format=csv&startTime=${startTime}&endTime=${endTime}")
+    }
+
     def showWindRealTime(): Unit = {
         val data: HttpResponse[String] = fetchWindRealTime
         println(data.body())
