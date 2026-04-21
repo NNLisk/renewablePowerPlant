@@ -2,7 +2,7 @@
 
 // Contributors:
 // Niko Lausto            || 001890439
-// Emilija Kurtinaityte   || 
+// Emilija Kurtinaityte   || 002340690
 // Adelina Stan           || 
 
 // AI statement: No AI tools 

@@ -23,7 +23,7 @@ object ApiCall {
     val apiKey: String = Config.fingridApiKey
     val client = HttpClient.newHttpClient()
 
-    private val userFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+    val userFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
     private val apiFmt  = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     private val csvFmt  = DateTimeFormatter.ISO_OFFSET_DATE_TIME
 

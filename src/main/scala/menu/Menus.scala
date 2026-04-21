@@ -3,7 +3,7 @@ package menus
 // menu inspo from https://stackoverflow.com/questions/44461625/commandline-menu-loop-scala
 
 import scala.annotation.tailrec
-import data.ApiCall
+import data.{ApiCall, dataProcessing}
 
 
 object Menus {
@@ -62,19 +62,19 @@ object Menus {
 
         scala.io.StdIn.readLine("Select: ").trim match {
             case "1" => {
-                ApiCall.askUserForPeriod() match {
+                dataProcessing.askUserForPeriod() match {
                     case Left(x) => println(x)
                     case Right(x) => println(ApiCall.fetchWindWithOptions(x._1, x._2).body)
                 }
             }
             case "2" =>  {
-                ApiCall.askUserForPeriod() match {
+              dataProcessing.askUserForPeriod() match {
                     case Left(x) => println(x)
                     case Right(x) => println(ApiCall.fetchHydroWithOptions(x._1, x._2).body)
                 }
             }
             case "3" => {
-                ApiCall.askUserForPeriod() match {
+              dataProcessing.askUserForPeriod() match {
                     case Left(x) => println(x)
                     case Right(x) => println(ApiCall.fetchHydroWithOptions(x._1, x._2).body)
                 }
