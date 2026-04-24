@@ -62,7 +62,28 @@ object ApiCall {
     }
 
     def fetchPreviousFiveMonths() = {
-        
+        val endTime   = LocalDateTime.now()
+        val startTime = endTime.minusMonths(5)
+
+        val datasets = List(
+            ("75/data",  "data/wind.csv"),
+            ("191/data", "data/hydro.csv"),
+            ("188/data", "data/nuclear.csv")
+        )
+
+        datasets.foreach { 
+            case (endpoint, filePath) =>
+                println(s"Fetching $endpoint...")
+                val response = fetchFromFinGrid(endpoint) (
+                s"format=csv&startTime=${startTime.format(apiFmt)}&endTime=${endTime.format(apiFmt)}&pageSize=20000"
+                )
+                val csvOnly = extractCsv(response.body())
+                println(s"Status: ${response.statusCode()}")
+                writeIntoCsv(csvOnly, filePath)
+
+                // Fingrid has a forced request cooldown of 2 seconds :D
+                Thread.sleep(2000)
+        }
     }
 
     def showWindRealTime(): Unit = {
@@ -122,6 +143,19 @@ object ApiCall {
 
         result.toList
     }*/
+
+    def extractCsv(body: String): String = {
+        // because the http requests are still JSON and the csv is embedded this function extracts the json string and unescapes newlines and quotemarks
+        val start = body.indexOf("\"data\":\"") + 8
+        val end   = body.lastIndexOf("\",\"pagination\"")
+
+        if (start > 8 && end > start)
+            body.substring(start, end)
+                .replace("\\n", "\n")
+                .replace("\\\"", "\"")
+        else body
+    }
+
     //writes fetched API data into csv
     def writeIntoCsv(csv: String, filePath: String): Unit = {
         val file=new File(filePath)
@@ -131,8 +165,10 @@ object ApiCall {
             case null=>()
             case parent => parent.mkdirs()
         }
-        val lines=csv.split("\n")
-        val writer=new BufferedWriter(new FileWriter(file, true)) // append mode
+
+        // changed this because of literal \n characters
+        val lines=csv.split("\\\\n|\\n")
+        val writer=new BufferedWriter(new FileWriter(file, true))
         try {
             if (!exists) {
                 writer.write("datasetId;startTime;endTime;value")

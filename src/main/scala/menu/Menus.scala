@@ -16,6 +16,7 @@ object Menus {
         |                                                         |
         > 1. Display energy output and statistics                 |
         > 2. Display the control menu                             |
+        > 3. Refresh datafiles (past 5 months)                    |
         > 3. Exit                                                 |
         |                                                         |
         '---------------------------------------------------------'
@@ -24,7 +25,8 @@ object Menus {
         scala.io.StdIn.readLine("Select: ").trim match {
             case "1" => showEnergyMetricsMenu1() ; showMainMenu()
             case "2" => /* CALL CONTROL PANEL SUB MENUY */ ; showMainMenu()
-            case "3" => println("Shutting down")
+            case "3" => ApiCall.fetchPreviousFiveMonths(); showMainMenu()
+            case "0" => println("Shutting down")
             case _ => showMainMenu()
         }
     }
