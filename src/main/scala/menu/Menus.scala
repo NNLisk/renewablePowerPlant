@@ -52,11 +52,11 @@ object Menus {
     def showEnergyMetricsMenu1(): Unit = {
 
         println("""
-        .-------------------- ENERGY METRICS ---------------------.
+        .-------------------- Energy Source ---------------------.
         |                                                         |
-        > 1. Display real time wind power data                    |
-        > 2. Display real time hydro power data                   |
-        > 3. Display real time nuclear power data                 |
+        > 1. Wind power data                                      |
+        > 2. Hydro power data                                     |
+        > 3. Nuclear power data                                   |
         > 0. Go back                                              |
         |                                                         |
         '---------------------------------------------------------'
@@ -64,22 +64,19 @@ object Menus {
 
         scala.io.StdIn.readLine("Select: ").trim match {
             case "1" => {
-              val observations=dataProcessing.pullFromCsv("data/wind.csv")
-              showFilterMenu(observations)
+              showFilterMenu(dataProcessing.pullFromCsv("data/wind.csv"))
               showEnergyMetricsMenu1() // come back after filter menu exits
 
             }
             case "2" =>  {
-              val observations=dataProcessing.pullFromCsv("data/hydro.csv")
-              showFilterMenu(observations)
+              showFilterMenu(dataProcessing.pullFromCsv("data/hydro.csv"))
               showEnergyMetricsMenu1()
             }
             case "3" => {
-              val observations=dataProcessing.pullFromCsv("data/nuclear.csv")
-              showFilterMenu(observations)
+              showFilterMenu(dataProcessing.pullFromCsv("data/nuclear.csv"))
               showEnergyMetricsMenu1()
             }
-            case "0" => showMainMenu()
+            case "0" =>()
             case _ => showEnergyMetricsMenu1()
         }
     }
@@ -87,7 +84,7 @@ object Menus {
     @tailrec
     def showFilterMenu(obs: List[powerOutputObservation]): Unit= {
         println("""
-        .-------------------- ENERGY METRICS ---------------------.
+        .-------------------- Filter period ---------------------.
         |                                                         |
         > 1. By Hour (last 24h)                                   |
         > 2. By Day (last month)                                  |
@@ -100,45 +97,73 @@ object Menus {
         |                                                         |
         '---------------------------------------------------------'
         """)
-        scala.io.StdIn.readLine("Select: ").trim match {
+        val selection=scala.io.StdIn.readLine("Select: ").trim
+        val filtered: Option[List[powerOutputObservation]] = selection match {
           case "1" =>
-            dataProcessing.printObservations(dataProcessing.filterLast24h(obs))
-            showFilterMenu(obs)
+            Some(dataProcessing.filterLast24h(obs))
           case "2" =>
-            dataProcessing.printObservations(dataProcessing.filterLastMonth(obs))
-            showFilterMenu(obs)
+            Some(dataProcessing.filterLastMonth(obs))
           case "3" =>
-            dataProcessing.printObservations(dataProcessing.filterLastMonth(obs))
-            showFilterMenu(obs)
+            Some(dataProcessing.filterLastMonth(obs))
           case "4" =>
-            dataProcessing.printObservations(dataProcessing.filterLast6Months(obs))
-            showFilterMenu(obs)
-  // in cases 5-7 Either handles bad user input
-          case "5" =>
+            Some(dataProcessing.filterLast6Months(obs))
+  // in cases 5-7 uses will need toenter specific date
+          case "5" | "6" | "7" =>
             dataProcessing.askUserForDate() match {
-              case Left(err)   => println(s"\n  Error: $err")
-              case Right(date) => dataProcessing.printObservations(dataProcessing.filterByDay(date)(obs))
+              case Left(err) =>
+                println(s"Error: $err")
+                None
+              case Right(date) => selection match {
+                case "5" => Some(dataProcessing.filterByDay(date)(obs))
+                case "6" => Some(dataProcessing.filterByWeek(date)(obs))
+                case "7" => Some(dataProcessing.filterByMonth(date)(obs))
+                case _ => None
+              }
+            }
+          case "0" => None             // exits back to showEnergyMetricsMenu1
+          case _ =>{
+            println("Invalid choice")
+            None
+          }
         }
-    showFilterMenu(obs)
+      // If we filtered list is not none, then move on to action Menu
+        filtered match {
+          case Some(data) if data.nonEmpty =>
+            showActionMenu(data, obs)
+          case Some(_) => println("\nNo data found for that period.")
+            showFilterMenu(obs)
+          case None =>
+            if (selection!="0") showFilterMenu(obs)
+            else()
+        }
+      }
+    @tailrec
+    def showActionMenu(filteredData: List[powerOutputObservation], originalObs: List[powerOutputObservation]): Unit = {
+      println(s"\nFound ${filteredData.size} records. What would you like to do?")
+      println("1. Print Raw Data")
+      println("2. Sort by Energy Output (Ascending)")
+      println("3. Sort by Energy Output (Descending)")
+      println("4. Show Statistical Analysis (Mean, Median, etc.)")
+      println("0. Back to Filters")
 
-    case "6" =>
-    dataProcessing.askUserForDate() match {
-      case Left(err)   => println(s"\n  Error: $err")
-      case Right(date) => dataProcessing.printObservations(dataProcessing.filterByWeek(date)(obs))
-    }
-    showFilterMenu(obs)
+      scala.io.StdIn.readLine("Select: ").trim match {
+        case "1" =>
+          dataProcessing.printObservations(filteredData)
+          showActionMenu(filteredData, originalObs)
+        case "2" =>
+          showActionMenu(filteredData.sortBy(_.outputKw), originalObs)
 
-    case "7" =>
-    dataProcessing.askUserForDate() match {
-      case Left(err)   => println(s"\n  Error: $err")
-      case Right(date) => dataProcessing.printObservations(dataProcessing.filterByMonth(date)(obs))
-    }
-    showFilterMenu(obs)
+        case "3" =>
+          showActionMenu(filteredData.sortBy(_.outputKw)(Ordering[Double].reverse), originalObs)
 
-    case "0" => ()             // exits back to showEnergyMetricsMenu1
-    case _ => showFilterMenu(obs)
+        /*case "4" =>
+          performAnalysis(filteredData)
+          showActionMenu(filteredData, originalObs)*/
+
+        case "0" => showFilterMenu(originalObs)
+        case _   => showActionMenu(filteredData, originalObs)
+      }
     }
-  }
 
 
 }
