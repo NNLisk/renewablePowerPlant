@@ -17,7 +17,7 @@ object Menus {
         > 1. Display energy output and statistics                 |
         > 2. Display the control menu                             |
         > 3. Refresh datafiles (past 5 months)                    |
-        > 3. Exit                                                 |
+        > 0. Exit                                                 |
         |                                                         |
         '---------------------------------------------------------'
         """)
@@ -156,14 +156,13 @@ object Menus {
         case "3" =>
           showActionMenu(filteredData.sortBy(_.outputKw)(Ordering[Double].reverse), originalObs)
 
-        /*case "4" =>
-          performAnalysis(filteredData)
-          showActionMenu(filteredData, originalObs)*/
+        case "4" =>
+          dataProcessing.printAnalysisCard(filteredData)
+          showActionMenu(filteredData, originalObs)
 
         case "0" => showFilterMenu(originalObs)
         case _   => showActionMenu(filteredData, originalObs)
       }
     }
-
 
 }

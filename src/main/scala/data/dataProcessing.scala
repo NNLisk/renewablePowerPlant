@@ -79,6 +79,7 @@ val filterLast24h: List[powerOutputObservation] => List[powerOutputObservation] 
   val filterLast6Months: List[powerOutputObservation] => List[powerOutputObservation] =
   obs => obs.filter(_.startTime.isAfter(LocalDateTime.now().minusMonths(6)))
 
+  //first choose the date then apply the resulting function to a dataset (currying)
   val filterByDay: LocalDateTime => List[powerOutputObservation] => List[powerOutputObservation] =
     date => obs => obs.filter { o =>
       o.startTime.toLocalDate.isEqual(date.toLocalDate)
@@ -108,6 +109,26 @@ val filterLast24h: List[powerOutputObservation] => List[powerOutputObservation] 
       printRows(obs)
       println(s"\n  Total: ${obs.size} row(s)")
     }
+  }
+
+  // =============== function for printing the analysis ===============
+  def printAnalysisCard(filteredData: List[powerOutputObservation]): Unit = {
+    val width = 57
+    val innerWidth = width - 4
+    val lines = Metrics.summarize(filteredData)
+    val indent = "        "
+
+    println("        .---------------- Statistical Analysis ----------------.")
+    println("        |                                                       |")
+
+    lines.foreach { line =>
+      val clipped = if (line.length > innerWidth) line.take(innerWidth) else line
+      val padded = ("%-" + innerWidth + "s").format(clipped)
+      println(s"$indent| $padded |")
+    }
+
+    println("        |                                                       |")
+    println("        '-------------------------------------------------------'")
   }
 
   @tailrec

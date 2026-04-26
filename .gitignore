@@ -50,4 +50,5 @@ build/
 
 tests/
 *.class
+*.tasty
 Config.scala
