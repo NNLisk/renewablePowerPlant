@@ -3,7 +3,7 @@ package menus
 // menu inspo from https://stackoverflow.com/questions/44461625/commandline-menu-loop-scala
 
 import scala.annotation.tailrec
-import data.{ApiCall, dataProcessing, powerOutputObservation}
+import data.{Alerts, ApiCall, dataProcessing, powerOutputObservation}
 
 
 object Menus {
@@ -24,7 +24,7 @@ object Menus {
 
         scala.io.StdIn.readLine("Select: ").trim match {
             case "1" => showEnergyMetricsMenu1() ; showMainMenu()
-            case "2" => /* CALL CONTROL PANEL SUB MENUY */ ; showMainMenu()
+            case "2" => showControlPanelMenu1(); showMainMenu()
             case "3" => ApiCall.fetchPreviousFiveMonths(); showMainMenu()
             case "0" => println("Shutting down")
             case _ => showMainMenu()
@@ -37,14 +37,77 @@ object Menus {
     def showControlPanelMenu1(): Unit = {
 
         println("""
-            menu here
+        .-------------------- Control Panel --------------------.
+        |                                                       |
+        > 1. Adjust solar panel angle                           |
+        > 2. Set wind turbine direction                         |
+        > 3. View system alerts                                 |
+        > 4. Simulate equipment fault                           |
+        > 5. Reset all alerts                                   |
+        > 0. Go back                                            |
+        |                                                       |
+        '-------------------------------------------------------'
         """)
 
         scala.io.StdIn.readLine("Select: ").trim match {
+            // handle solar panel angle adjustment
             case "1" =>
+              val angleRaw = scala.io.StdIn.readLine("  Enter panel angle (0-90): ").trim
+              // parse user input safely (option, some, none)
+              angleRaw.toDoubleOption match {
+                case Some(angle) if angle >= 0.0 && angle <= 90.0 =>
+                  println(s"  [OK] Solar panel angle adjusted to ${f"$angle%.1f"} degrees")
+                case Some(_) => // numeric value but out of range
+                  println("  Error: Angle must be between 0 and 90.")
+                case None => // non-numeric input
+                  println("  Error: Please enter a valid number.")
+              }
+              showControlPanelMenu1()
+
+            // handle wind turbine direction adjustment
             case "2" =>
+              val directionRaw = scala.io.StdIn.readLine("  Enter turbine direction (0-359): ").trim
+              // parse user input safely (option, some, none)
+              directionRaw.toDoubleOption match {
+                case Some(direction) if direction >= 0.0 && direction < 360.0 =>
+                  println(s"  [OK] Wind turbine direction set to ${f"$direction%.1f"} degrees")
+                case Some(_) => // numeric value but out of range
+                  println("  Error: Direction must be between 0 and 359.")
+                case None => // non-numeric input
+                  println("  Error: Please enter a valid number.")
+              }
+              showControlPanelMenu1()
+
+            // refresh and display alerts
             case "3" =>
-            case _ => showControlPanelMenu1()
+              // ApiCall.fetchPreviousFiveMonths(); // refresh data to ensure updated alerts (we can only check stored data instead...)
+              Alerts.refreshDataAlerts() // generate alerts
+              Alerts.checkAlerts() // display alerts
+              showControlPanelMenu1()
+
+            // create "dummy" fault simulation
+            case "4" =>
+              println("  Select source to fault:")
+              println("  1. Solar")
+              println("  2. Wind")
+              println("  3. Hydro")
+
+              scala.io.StdIn.readLine("  Select: ").trim match {
+                case "1" => Alerts.triggerFault("Solar")
+                case "2" => Alerts.triggerFault("Wind")
+                case "3" => Alerts.triggerFault("Hydro")
+                case _ => println("  Invalid selection.")
+              }
+              showControlPanelMenu1()
+
+            // ---------------------------------clear all active alerts (maybe change to clear specific alert)---------------------------------
+            case "5" =>
+              Alerts.resetAlerts()
+              showControlPanelMenu1()
+
+            // return to main menu
+            case "0" => ()
+            case _ => showControlPanelMenu1() // invalid input (redisplay menu)
         }
     }
 
