@@ -3,7 +3,7 @@ package data
 import data.ApiCall.{parseUserDate, userFmt}
 
 import java.io.{BufferedReader, File, FileReader}
-import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime}
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 import java.time.temporal.IsoFields
 import scala.annotation.tailrec
@@ -29,7 +29,11 @@ object dataProcessing {
         if (line.trim.nonEmpty) {
           val cols=line.trim.split(";")
           try {
-            val time = LocalDateTime.parse(cols(1).trim, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            val time = LocalDateTime.ofInstant(Instant.parse(cols(1).trim), java.time.ZoneOffset.UTC)
+            
+            // changed this because it had trouble with the Z in datetime
+            // val time = LocalDateTime.parse(cols(1).trim, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            
             result+=powerOutputObservation(
               dataset= cols(0).toInt,
               startTime = time,

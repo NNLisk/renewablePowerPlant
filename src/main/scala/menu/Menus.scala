@@ -119,7 +119,7 @@ object Menus {
         |                                                         |
         > 1. Wind power data                                      |
         > 2. Hydro power data                                     |
-        > 3. Nuclear power data                                   |
+        > 3. Solar power data                                   |
         > 0. Go back                                              |
         |                                                         |
         '---------------------------------------------------------'
@@ -136,7 +136,7 @@ object Menus {
               showEnergyMetricsMenu1()
             }
             case "3" => {
-              showFilterMenu(dataProcessing.pullFromCsv("data/nuclear.csv"))
+              showFilterMenu(dataProcessing.pullFromCsv("data/solar.csv"))
               showEnergyMetricsMenu1()
             }
             case "0" =>()
@@ -160,6 +160,9 @@ object Menus {
         |                                                         |
         '---------------------------------------------------------'
         """)
+
+        // println(obs)
+        
         val selection=scala.io.StdIn.readLine("Select: ").trim
         val filtered: Option[List[powerOutputObservation]] = selection match {
           case "1" =>

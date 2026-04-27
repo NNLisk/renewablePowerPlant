@@ -69,7 +69,7 @@ object ApiCall {
         val datasets = List(
             ("75/data",  "data/wind.csv"),
             ("191/data", "data/hydro.csv"),
-            ("188/data", "data/nuclear.csv")
+            ("267/data", "data/solar.csv")
         )
 
         datasets.foreach { 
