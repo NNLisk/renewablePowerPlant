@@ -52,3 +52,4 @@ tests/
 *.class
 *.tasty
 Config.scala
+*.csv

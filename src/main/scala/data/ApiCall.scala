@@ -1,5 +1,6 @@
 package data
 
+import java.io.{File}
 // scala has no native http library :/ so we use the java library
 // https://docs.oracle.com/en/java/javase/12/docs/api/java.net.http/java/net/http/HttpClient.html
 import config.Config
@@ -79,6 +80,11 @@ object ApiCall {
                 )
                 val csvOnly = extractCsv(response.body())
                 println(s"Status: ${response.statusCode()}")
+                
+                // flush the old file
+                val f = new File(filePath)
+                if (f.exists) f.delete()
+                
                 writeIntoCsv(csvOnly, filePath)
 
                 // Fingrid has a forced request cooldown of 2 seconds :D
