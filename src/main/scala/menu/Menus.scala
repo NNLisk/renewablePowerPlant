@@ -14,8 +14,8 @@ object Menus {
         println("""
         .------ Welcome to a renewable energy plant system ------.
         |                                                         |
-        > 1. Display energy output and statistics                 |
-        > 2. Display the control menu                             |
+        > 1. View energy output and statistics                 |
+        > 2. View the control menu                             |
         > 3. Refresh datafiles (past 5 months)                    |
         > 0. Exit                                                 |
         |                                                         |
@@ -149,10 +149,10 @@ object Menus {
         println("""
         .-------------------- Filter period ---------------------.
         |                                                         |
-        > 1. By Hour (last 24h)                                   |
-        > 2. By Day (last month)                                  |
+        > 1. By hour (last 24h)                                   |
+        > 2. By day (last month)                                  |
         > 3. By week (last month)                                 |
-        > 4. By Month (last 6 months)                             |
+        > 4. By month (last 6 months)                             |
         > 5. Get a specific day                                   |
         > 6. Get a specific week                                  |
         > 7. Get a specific month                                 |
@@ -173,7 +173,7 @@ object Menus {
             Some(dataProcessing.filterLastMonth(obs))
           case "4" =>
             Some(dataProcessing.filterLast6Months(obs))
-  // in cases 5-7 uses will need toenter specific date
+  // in cases 5-7 uses will need to enter specific date
           case "5" | "6" | "7" =>
             dataProcessing.askUserForDate() match {
               case Left(err) =>
@@ -206,9 +206,9 @@ object Menus {
     @tailrec
     def showActionMenu(filteredData: List[powerOutputObservation], originalObs: List[powerOutputObservation]): Unit = {
       println(s"\nFound ${filteredData.size} records. What would you like to do?")
-      println("1. Print Raw Data")
-      println("2. Sort by Energy Output (Ascending)")
-      println("3. Sort by Energy Output (Descending)")
+      println("1. Print raw data")
+      println("2. Sort by energy output (Ascending)")
+      println("3. Sort by energy output (Descending)")
       println("4. Show Statistical Analysis (Mean, Median, etc.)")
       println("0. Back to Filters")
 
@@ -217,11 +217,16 @@ object Menus {
           dataProcessing.printObservations(filteredData)
           showActionMenu(filteredData, originalObs)
         case "2" =>
-          showActionMenu(filteredData.sortBy(_.outputKw), originalObs)
+          val sorted=filteredData.sortBy(_.outputKw)
+          println("\nData sorted: low to high.")
+          println("Select '1' to view the sorted data.")
+          showActionMenu(sorted, originalObs)
 
         case "3" =>
-          showActionMenu(filteredData.sortBy(_.outputKw)(Ordering[Double].reverse), originalObs)
-
+          val sorted = filteredData.sortBy(_.outputKw)(Ordering[Double].reverse)
+          println("\nData sorted: high to low.")
+          println("Select '1' to view the sorted data.")
+          showActionMenu(sorted, originalObs)
         case "4" =>
           dataProcessing.printAnalysisCard(filteredData)
           showActionMenu(filteredData, originalObs)

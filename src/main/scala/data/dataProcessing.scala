@@ -108,8 +108,8 @@ val filterLast24h: List[powerOutputObservation] => List[powerOutputObservation] 
     if (obs.isEmpty) {
       println("\n  No data found for that period.")
     } else {
-      println(f"\n  ${"Start time"}%-25s ${"End time"}%-25s ${"kW"}%10s")
-      println("  " + "-" * 63)
+      println(f"\n  ${"Time"}%-25s ${"kW"}%10s")
+      println("  " + "-" * 37)
       printRows(obs)
       println(s"\n  Total: ${obs.size} row(s)")
     }
@@ -139,7 +139,7 @@ val filterLast24h: List[powerOutputObservation] => List[powerOutputObservation] 
   private def printRows(obs: List[powerOutputObservation]): Unit = obs match {
     case Nil => ()
     case head :: tail =>
-      println(f"  ${head.startTime.toString}%-25s ${head.endTime.toString}%-25s ${head.outputKw}%10.2f")
+      println(f"  ${head.startTime.toString}%-25s ${head.outputKw}%10.2f")
       printRows(tail)
   }
 
