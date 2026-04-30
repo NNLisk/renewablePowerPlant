@@ -4,7 +4,7 @@ package menus
 
 import scala.annotation.tailrec
 import data.{Alerts, ApiCall, dataProcessing, powerOutputObservation}
-
+import java.time.{LocalDateTime}
 
 object Menus {
 
@@ -43,7 +43,8 @@ object Menus {
         > 2. Set wind turbine direction                         |
         > 3. View system alerts                                 |
         > 4. Simulate equipment fault                           |
-        > 5. Reset all alerts                                   |
+        > 5. Run check for aging components                     |
+        > 6. Reset all alerts                                   |
         > 0. Go back                                            |
         |                                                       |
         '-------------------------------------------------------'
@@ -99,9 +100,11 @@ object Menus {
                 case _ => println("  Invalid selection.")
               }
               showControlPanelMenu1()
-
-            // ---------------------------------clear all active alerts (maybe change to clear specific alert)---------------------------------
             case "5" =>
+              Alerts.checkAgeingStatus()
+              showControlPanelMenu1()
+            // ---------------------------------clear all active alerts (maybe change to clear specific alert)---------------------------------
+            case "6" =>
               Alerts.resetAlerts()
               showControlPanelMenu1()
 
@@ -143,7 +146,7 @@ object Menus {
             case _ => showEnergyMetricsMenu1()
         }
     }
-  // obs - the list that comes from pullFromCsv
+    // obs - the list that comes from pullFromCsv
     @tailrec
     def showFilterMenu(obs: List[powerOutputObservation]): Unit= {
         println("""

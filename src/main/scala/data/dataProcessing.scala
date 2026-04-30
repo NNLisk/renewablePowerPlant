@@ -47,7 +47,7 @@ object dataProcessing {
         line = reader.readLine()
       }
     } catch {
-      case e: Exception => println(s"  Error reading CSV: ${e.getMessage}")
+      case e: Exception => println(s" Error reading CSV: ${e.getMessage}")
     } finally {
       reader.close()
     }
@@ -56,7 +56,7 @@ object dataProcessing {
 
 //the function below will be used for menu options that ask user to enter specific date
   def askUserForDate(): Either[String, LocalDateTime] = {
-    val raw = scala.io.StdIn.readLine("  Enter date (DD/MM/YYYY): ").trim
+    val raw = scala.io.StdIn.readLine(" Enter date (DD/MM/YYYY): ").trim
     if (raw.isEmpty) Left("No date entered.")
     else {
       try {
@@ -69,7 +69,7 @@ object dataProcessing {
       }
     }
   }
-//higher order filtering functions, which take a list and predicate. they will return filtered list from scala collections
+//higher order filtering functions, which  returns filtered list
 val filterLast24h: List[powerOutputObservation] => List[powerOutputObservation] = obs => {
   if (obs.isEmpty) Nil
   else {

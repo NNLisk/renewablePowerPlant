@@ -6,7 +6,7 @@ object Alerts {
   private val monitoredSources: List[(String, String)] = List(
     ("Wind", "data/wind.csv"),
     ("Hydro", "data/hydro.csv"),
-    ("Nuclear", "data/nuclear.csv")
+    ("Nuclear", "data/solar.csv")
   )
 
   // add a new alert only if it is not already active
@@ -71,5 +71,30 @@ object Alerts {
       }
 
     maybeAlert.foreach(addAlert)
+  }
+  def checkAgeingStatus(): Unit = {
+    monitoredSources.foreach { case (source, path) =>
+      val observations = dataProcessing.pullFromCsv(path)
+      if (observations.nonEmpty) {
+        val outputs = observations.map(_.outputKw)
+
+        // Count zero outputs, which would show power plant component failure
+        val zeroCount = outputs.count(_ == 0.0)
+        val zeroThreshold = outputs.size * 0.1 // 10% of data is zero
+        if (zeroCount > zeroThreshold) {
+          addAlert(s"[CRITICAL] $source ageing detected: $zeroCount zero-readings recorded. Replacement recommended.")
+        }
+        // Check performance trend. Compares old and new data, and looks for downward trend
+        val (oldData, newData) = outputs.splitAt(outputs.size / 2)
+        val ageingAlert = for {
+          oldAvg <- Metrics.mean(oldData)
+          newAvg <- Metrics.mean(newData)
+          if newAvg < (oldAvg * 0.85) // Trigger if current production is < 85% of historical
+        } yield s"[SUGGESTION] $source efficiency dropped to ${f"${(newAvg/oldAvg)*100}%.1f"}%%. Consider maintenance."
+
+        ageingAlert.foreach(addAlert)
+      }
+    }
+    checkAlerts() // Show results immediately
   }
 }
