@@ -14,8 +14,8 @@ object Menus {
         println("""
         .------ Welcome to a renewable energy plant system ------.
         |                                                         |
-        > 1. View energy output and statistics                 |
-        > 2. View the control menu                             |
+        > 1. View energy output and statistics                    |
+        > 2. View the control menu                                |
         > 3. Refresh datafiles (past 5 months)                    |
         > 0. Exit                                                 |
         |                                                         |
@@ -122,7 +122,7 @@ object Menus {
         |                                                         |
         > 1. Wind power data                                      |
         > 2. Hydro power data                                     |
-        > 3. Solar power data                                   |
+        > 3. Solar power data                                     |
         > 0. Go back                                              |
         |                                                         |
         '---------------------------------------------------------'
