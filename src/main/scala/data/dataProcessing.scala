@@ -73,7 +73,7 @@ object dataProcessing {
 val filterLast24h: List[powerOutputObservation] => List[powerOutputObservation] = obs => {
   if (obs.isEmpty) Nil
   else {
-    val mostRecent = obs.map(_.startTime).maxBy(_.toEpochSecond(java.time.ZoneOffset.UTC))
+    val mostRecent = obs.map(_.startTime).maxBy(_.toEpochSecond(java.time.ZoneOffset.UTC)) // FUNCTOR - List.map extracts start times while keeping the list structure
     obs.filter(_.startTime.isAfter(mostRecent.minusHours(24)))
   }
 }

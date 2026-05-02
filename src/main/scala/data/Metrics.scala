@@ -4,7 +4,7 @@ package data
 object Metrics {
 
 	private val toOutputs: List[powerOutputObservation] => List[Double] =
-		observations => observations.map(_.outputKw)
+		observations => observations.map(_.outputKw) // FUNCTOR
 
     // option (&some/none) to handle missing values without throwing exceptions
 	val mean: List[Double] => Option[Double] = values =>
@@ -45,15 +45,15 @@ object Metrics {
 			List("No values available for analysis.")
 		} else {
 			val format: Double => String = value => f"$value%.2f"
-			val modeText = mode(outputs).map(format).getOrElse("No mode (all values occur once)")
+			val modeText = mode(outputs).map(format).getOrElse("No mode (all values occur once)") // FUNCTOR - Option.map transforms the present value if it exists
 
 			List(
 				s"Count: ${outputs.size}",
-				s"Mean: ${mean(outputs).map(format).getOrElse("N/A")}",
-				s"Median: ${median(outputs).map(format).getOrElse("N/A")}",
+				s"Mean: ${mean(outputs).map(format).getOrElse("N/A")}", // FUNCTOR - Option.map formats the computed result when it exists
+				s"Median: ${median(outputs).map(format).getOrElse("N/A")}", // FUNCTOR - Option.map preserves the optional result while changing its type
 				s"Mode: $modeText",
-				s"Range: ${range(outputs).map(format).getOrElse("N/A")}",
-				s"Midrange: ${midrange(outputs).map(format).getOrElse("N/A")}"
+				s"Range: ${range(outputs).map(format).getOrElse("N/A")}", // FUNCTOR - Option.map applies formatting only when a range exists
+				s"Midrange: ${midrange(outputs).map(format).getOrElse("N/A")}" // FUNCTOR - Option.map keeps absence/presence intact
 			)
 		}
 	}

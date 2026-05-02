@@ -46,15 +46,15 @@ object Alerts {
   // alert generation logic (compare recent output to historical baseline => trigger alert if lower)
   def refreshDataAlerts(): Unit = {
     monitoredSources.foreach { case (source, path) => 
-      val observations = dataProcessing.pullFromCsv(path)
+      val observations = dataProcessing.pullFromCsv(path) // observations is of type List[powerOutputObservation] ---- FUNCTOR
       if (observations.nonEmpty) checkLowOutput(source, observations) // actual comparison
     }
   }
 
   // core logic for comparing recent output to historical baseline
   def checkLowOutput(source: String, observations: List[powerOutputObservation]): Unit = {
-    val allOutputs = observations.map(_.outputKw) // historical outputs (baseline)
-    val recentOutputs = dataProcessing.filterLast24h(observations).map(_.outputKw) // recent outputs
+    val allOutputs = observations.map(_.outputKw) // historical outputs (baseline); FUNCTOR - List.map transforms each observation into a list of outputs
+    val recentOutputs = dataProcessing.filterLast24h(observations).map(_.outputKw) // recent outputs; FUNCTOR
 
     val maybeAlert: Option[String] = // potential alert message
       Metrics.mean(allOutputs).flatMap { baselineAvg =>
@@ -74,9 +74,9 @@ object Alerts {
   }
   def checkAgeingStatus(): Unit = {
     monitoredSources.foreach { case (source, path) =>
-      val observations = dataProcessing.pullFromCsv(path)
+      val observations = dataProcessing.pullFromCsv(path) // observations is of type List[powerOutputObservation] ---- FUNCTOR
       if (observations.nonEmpty) {
-        val outputs = observations.map(_.outputKw)
+        val outputs = observations.map(_.outputKw) // FUNCTOR
 
         // Count zero outputs, which would show power plant component failure
         val zeroCount = outputs.count(_ == 0.0)
