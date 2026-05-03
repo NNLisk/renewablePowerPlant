@@ -8,6 +8,12 @@ import java.time.{LocalDateTime}
 
 object Menus {
 
+
+    // all menus here follow the same method, tailrecursive functions
+    // selections call the other menu functions, errors call the same menu
+    // recursively after displaying the error message to make sure it doesn't
+    // crash at any point. Choice is handled via pattern matching.
+
     @tailrec
     def showMainMenu(): Unit = {
 
@@ -21,6 +27,8 @@ object Menus {
         |                                                         |
         '---------------------------------------------------------'
         """)
+
+        // show menus based on choice
 
         scala.io.StdIn.readLine("Select: ").trim match {
             case "1" => showEnergyMetricsMenu1() ; showMainMenu()
@@ -206,6 +214,8 @@ object Menus {
             else()
         }
       }
+
+    // actions after data found
     @tailrec
     def showActionMenu(filteredData: List[powerOutputObservation], originalObs: List[powerOutputObservation]): Unit = {
       println(s"\nFound ${filteredData.size} records. What would you like to do?")
